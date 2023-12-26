@@ -14,84 +14,88 @@
 
 <!DOCTYPE html>
 <html lang="{{ lang }}">
-    <head>
-        {%- block title -%}
-            <title>{{ config.title }}</title>
-        {%- endblock title -%}
+	<head>
+		{%- block title -%}
+			<title>{{ config.title }}</title>
+		{%- endblock title -%}
 
-        {%- block general_meta -%}
-            {{ head::general_meta() }}
-        {%- endblock general_meta -%}
+		{%- block general_meta -%}
+			{{ head::general_meta() }}
+		{%- endblock general_meta -%}
 
-        {%- block og_preview -%}
-            {{ social::og_preview() }}
-        {%- endblock og_preview -%}
+		{%- block og_preview -%}
+			{{ social::og_preview() }}
+		{%- endblock og_preview -%}
 
-        {%- block fonts -%}
-            {{ head::fonts() }}
-        {%- endblock fonts -%}
+		{%- block fonts -%}
+			{{ head::fonts() }}
+		{%- endblock fonts -%}
 
-        {%- block css -%}
-            {{ head::styling() }}
-        {%- endblock css -%}
+		{%- block css -%}
+			{{ head::styling() }}
+		{%- endblock css -%}
 
-        {%- block favicon -%}
-            {{ head::favicon() }}
-        {%- endblock favicon -%}
+		{%- block favicon -%}
+			{{ head::favicon() }}
+		{%- endblock favicon -%}
 
-        {%- block rss -%}
-            {{ head::rss() }}
-        {%- endblock rss -%}
+		{%- block rss -%}
+			{{ head::rss() }}
+		{%- endblock rss -%}
 
-        {%- block math -%}
-        {%- endblock math -%}
-    </head>
-    <body>
-        {#
-        "container full" when width == True, regardless of center
-        "container center" when only center == True
-        "container" when both false.
-        #}
-        {%- if config.extra.full_width -%}
-            {%- set container = "container full" -%}
-        {%- elif config.extra.center -%}
-            {%- set container = "container center" -%}
-        {%- else -%}
-            {%- set container = "container" -%}
-        {%- endif -%}
+		{%- block math -%}
+		{%- endblock math -%}
+	</head>
+	<body>
+		{#
+		"container full" when width == True, regardless of center
+		"container center" when only center == True
+		"container" when both false.
+		#}
+		{%- if config.extra.full_width -%}
+			{%- set container = "container full" -%}
+		{%- elif config.extra.center -%}
+			{%- set container = "container center" -%}
+		{%- else -%}
+			{%- set container = "container" -%}
+		{%- endif -%}
 
-        <div class="{{ container }}">
-            {%- block header -%}
-                {{ header::header() }}
-            {%- endblock header -%}
-            <div class="content">
-                {%-  block main -%}
-                    {{ lists::list_pages() }}
-                {%- endblock main -%}
-            </div>
-            {#-
-            I keep pagination out of list, unlike Terminal, because I don't
-            like how the pagination buttons move with the width of the content
-            div.
-            -#}
-            {%- block pagination -%}
-                {{ pagination::paginate() }}
-            {%- endblock pagination -%}
+		<div class="{{ container }}">
+			{%- block header -%}
+				{{ header::header() }}
+			{%- endblock header -%}
+			<div class="content post on-list">
+				{%-  block main -%}
+					{% if config.extra.landing %}
+						{{ lists::page_summary(page=get_page(path=config.extra.landing)) }}
+					{% else %}
+						{{ lists::list_pages() }}
+					{% endif %}
+				{%- endblock main -%}
+			</div>
+			{#-
+			I keep pagination out of list, unlike Terminal, because I don't
+			like how the pagination buttons move with the width of the content
+			div.
+			-#}
+			{%- block pagination -%}
+				{{ pagination::paginate() }}
+			{%- endblock pagination -%}
 
-            {%- block footer -%}
-                <footer class="footer">
-                    <div class="footer__inner">
-                        {%- block copyright -%}
-                            {{ footer::copyright() }}
-                        {%- endblock copyright -%}
+			{%- block footer -%}
+				<footer class="footer">
+					<div class="footer__inner">
+						{%- block copyright -%}
+							{{ footer::copyright() }}
+						{%- endblock copyright -%}
 
-                        {%- block script -%}
-                            {{ footer::script() }}
-                        {%- endblock script -%}
-                    </div>
-                    {{ extended_footer::extended_footer() }}
-                </footer>
-            {%- endblock footer -%}
-        </div>
-    </body>
+						{%- block script -%}
+							{{ footer::script() }}
+						{%- endblock script -%}
+					</div>
+					{{ extended_footer::extended_footer() }}
+				</footer>
+			{%- endblock footer -%}
+		</div>
+	</body>
 </html>

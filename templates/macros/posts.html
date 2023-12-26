@@ -1,100 +1,79 @@
-{% macro section_meta(section, author) %}
-    <div class="post-meta">
-        <span class="post-date">
+{% macro section_meta(section) %}
+	<div class="post-meta">
+		<span class="post-date">
 
-            {%- if section.extra["date"] -%}
-                {{ section.extra["date"] | date(format="%Y.%m.%d") }}
-                {# end of section.date if-check #}
-            {%- endif -%}
-        </span>
+			{%- if section.extra["date"] -%}
+				{{ section.extra["date"] | date(format="%Y.%m.%d") }}
+				{# end of section.date if-check #}
+			{%- endif -%}
+		</span>
 
-        <span class="post-author">
-            {%- if author -%}
-                {{ utils::author(page=section) }}
-            {%- endif -%}
-        </span>
-    </div>
+		{% if page.extra.author %}
+			<span class="post-author">{{ utils::author(page=section) }}</span>
+		{% endif %}
+	</div>
 {% endmacro section_meta %}
 
 {% macro langs(page) %}
-    {% if page.translations | length > 1 %}
-    <div class="post-langs" style="opacity: .5;">
-      <span>Translations: </span>{# TODO translate the span content too #}
-      {% for translated in page.translations %}
-      <a href="{{ translated.permalink }}">{{ translated.lang }}</a>
-      {% endfor %}
-    </div>
-    {% endif %}
+	{% if page.translations | length > 1 %}
+	<div class="post-langs" style="opacity: .5;">
+	  <span>Translations: </span>{# TODO translate the span content too #}
+	  {% for translated in page.translations %}
+	  <a href="{{ translated.permalink }}">{{ translated.lang }}</a>
+	  {% endfor %}
+	</div>
+	{% endif %}
 {% endmacro langs %}
 
-{% macro meta(page, author) %}
-    <div class="post-meta">
-        <span class="post-date">
-            {%- if page.date -%}
-                {{ page.date | date(format="%Y.%m.%d") }}
-                {# end of page.date if-check #}
-            {%- endif -%}
+{% macro meta(page) %}
+	<div class="post-meta">
+		<span class="post-date">
+			{%- if page.date -%}
+				{{ page.date | date(format="%Y.%m.%d") }}
+				{# end of page.date if-check #}
+			{%- endif -%}
 
-            {%- if page.updated -%}
-                [Updated: {{ page.updated | date(format="%Y.%m.%d") }}]
-                {# end of page.updated if-check #}
-            {%- endif -%}
-        </span>
+			{%- if page.updated -%}
+				[Updated: {{ page.updated | date(format="%Y.%m.%d") }}]
+				{# end of page.updated if-check #}
+			{%- endif -%}
+		</span>
 
-        <span class="post-author">
-            {%- if author -%}
-                {{ utils::author(page=page) }}
-            {%- endif -%}
-        </span>
+		{% if page.extra.author %}
+			<span class="post-author">{{ utils::author(page=page) }}</span>
+		{% endif %}
 
-        {{  posts::taxonomies(taxonomy=page.taxonomies,
-            disp_cat=config.extra.show_categories,
-            disp_tag=config.extra.show_tags) }}
-    </div>
+		{% if config.extra.show_categories and config.extra.show_categories == true and page.taxonomies.categories %}
+			<span class="post-categories">{{ posts::categories(categories=page.taxonomies.categories) }}</div>
+		{% endif %}
+	</div>
+	{% if config.extra.show_tags and config.extra.show_tags == true and page.taxonomies.tags %}
+		<div class="post-tags">{{  posts::tags(tags=page.taxonomies.tags) }}</div>
+	{% endif %}
 {% endmacro meta %}
 
-{% macro taxonomies(taxonomy, disp_cat, disp_tag) %}
-
-    {% if disp_cat and disp_tag -%}
-        {% if taxonomy.categories -%}
-            {{ posts::categories(categories=taxonomy.categories) }}
-            {# end if-check for categories #}
-        {%- endif -%}
-
-        {% if taxonomy.tags -%}
-            {{ posts::tags(tags=taxonomy.tags) }}
-            {# end if-check for tags #}
-        {% endif -%}
-    {% elif disp_cat -%}
-        {% if taxonomy.categories-%}
-            {{ posts::categories(categories=taxonomy.categories) }}
-            {# end if-check for categories #}
-        {% endif -%}
-    {% elif disp_tag -%}
-        {% if taxonomy.tags -%}
-            {{ posts::tags(tags=taxonomy.tags) }}
-            {# end if-check for tags #}
-        {% endif -%}
-        {# end if-check for BOTH disp bools #}
-    {% endif -%}
-{% endmacro taxonomies %}
-
 {% macro categories(categories) %}
-    :: {
-    {%- for cat in categories -%}
-        {%- if loop.last -%}
-            <a href="{{ get_taxonomy_url(kind="categories", name=cat ) }}">{{ cat }}</a>
-        {%- else -%}
-            <a href="{{ get_taxonomy_url(kind="categories", name=cat ) }}">{{ cat }}</a>,
-            {# end of if-check for whether last item or not #}
-        {%- endif -%}
-    {%- endfor -%}} {# <--- NOTE: OPEN CURLY BRACE #}
+	:: in {
+	{%- for cat in categories -%}
+		{%- if loop.last -%}
+			<a href="{{ get_taxonomy_url(kind="categories", name=cat ) }}">{{ cat }}</a>
+		{%- else -%}
+			<a href="{{ get_taxonomy_url(kind="categories", name=cat ) }}">{{ cat }}</a>,
+			{# end of if-check for whether last item or not #}
+		{%- endif -%}
+	{%- endfor -%}} {# <--- NOTE: OPEN CURLY BRACE #}
 {% endmacro categories %}
 
 {% macro tags(tags) %}
-    ::
-    {% for tag in tags -%}
-        #<a href="{{get_taxonomy_url(kind="tags", name=tag )}}">{{ tag }}</a>
-        {# end of tags for-loop #}
-    {% endfor -%}
+	<div class="post-tag">
+		{% for tag in tags -%}
+			#<a href="{{get_taxonomy_url(kind="tags", name=tag )}}">{{ tag }}</a>
+		{% endfor -%}
+	</div>
 {% endmacro tags %}
+
+{% macro cover(page) %}
+	{% if page.extra.cover %}
+		<div class="post-cover"><img src="{{page.extra.cover}}" {% if page.extra.cover_alt %}alt="{{page.extra.cover_alt}}"{% endif %}></div>
+	{% endif %}
+{% endmacro cover %}

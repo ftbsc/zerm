@@ -1,39 +1,46 @@
+{% macro page_summary(page) %}
+	<div class="post on-list">
+		<header>
+			<h1 class="post-title">
+				<a href="{% if page.extra.redirect %}{{ page.extra.redirect }}{% else %}{{ page.permalink }}{% endif %}">{{ page.title }}</a>
+			</h1>
+		</header>
+		
+		{{ posts::meta(page=page) }}
+
+		{{ posts::cover(page=page) }}
+
+		<div class="post-content">
+			{% if page.extra.show_full_content and page.extra.show_full_content == true %}
+				{{ page.content | safe }}
+			{% else %}
+				{% if page.description %}
+					{{ page.description }}
+				{%	elif page.summary -%}
+					{{ page.summary | safe }}
+				{% endif %}
+			{%	endif %}
+		</div>
+		{% if page.description or page.summary -%}
+			{% if config.extra.read_more %}
+				<div><a class="read-more button" href="{{ page.permalink }}">{{ config.extra.read_more }} →</a></div>
+			{% endif %}
+		{% endif -%}
+	</div>
+{% endmacro page_summary %}
+
 {% macro list_pages() %}
 <section class="posts">
-    
-    {%- for page in paginator.pages -%}
-    
-    <div class="post on-list">
-        <header>
-            <h1 class="post-title">
-                <a href="{{ page.permalink }}">{{ page.title }}</a>
-            </h1>
-        </header>
-        
-        
-        {{ posts::meta(page=page, author=config.extra.show_author) }}
-        
-        {#-                NOTE              -#}
-        {#- --------------------------------  -#}
-        {#- Skipping the Cover page implementation. Not included/covered for now. -#}
+	{%- if paginator -%}
+		{%- set pages = paginator.pages -%}
+	{%- else -%}
+		{%- set pages = section.pages -%}
+	{%- endif -%}
 
-        <div class="post-content">
-            {%  if page.description -%}
-            {{ page.description }}
-            {#- end if-check for description -#}
-            {%  elif page.summary -%}
-            {{ page.summary | safe }}
-            {%  endif -%}
-        </div>
-        {% if page.description or page.summary -%}
-        <div>
-            <a class="read-more button" href="{{ page.permalink }}">{{ config.extra.read_more }} →</a>
-        </div>
-        {% endif -%}
-    </div>
-    {# End of pagination for-loop #}
-    {%- endfor -%}
-    {#- I don't put pagination here like Terminal does. I don't like how
-    the buttons move with the size of post entries in the content div. -#}
+	{%- for page in pages -%}
+		{{ lists::page_summary(page=page) }}
+	{%- endfor -%}
+	{#- I don't put pagination here like Terminal does. I don't like how
+	the buttons move with the size of post entries in the content div. -#}
 </section>
 {% endmacro list_pages %}
