@@ -36,7 +36,7 @@
 		{{ page.content | safe }}
 
 		{% if page.extra.redirect %}
-			<meta http-equiv="Refresh" content="0; url='https://zaaarf.foo/blog/to-kill-a-boilerplate/'/>
+			<meta http-equiv="Refresh" content="0; url='{{ page.extra.redirect }}'"/>
 		{% endif %}
 
 		{{ comments::comments() }}
